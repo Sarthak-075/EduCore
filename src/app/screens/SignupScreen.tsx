@@ -6,8 +6,8 @@ import { Link, useNavigate } from "react-router";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useSignupMutation } from "../api/auth";
-import { toast } from "sonner";
 import { getErrorMessage } from "../services/errorHandler";
+import { ErrorAlert } from "../components/ui/alerts";
 
 export function SignupScreen() {
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ export function SignupScreen() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState("");
   const [signup, { isLoading }] = useSignupMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,15 +38,18 @@ export function SignupScreen() {
 
     if (Object.keys(newErrors).length === 0) {
       try {
+        setApiError("");
         await signup({
           name: formData.name,
           email: formData.email,
           password: formData.password,
         }).unwrap();
-        toast.success("Account created successfully!");
         navigate("/dashboard");
       } catch (err) {
-        toast.error(getErrorMessage(err));
+        const errorMsg = getErrorMessage(err);
+        setApiError(errorMsg);
+        // Auto-clear error after 5 seconds
+        setTimeout(() => setApiError(""), 5000);
       }
     }
   };
@@ -67,6 +71,8 @@ export function SignupScreen() {
         <p className="text-muted-foreground text-center mb-8">
           Join us to manage your tuition fees
         </p>
+
+        {apiError && <ErrorAlert error={apiError} title="Signup Failed" />}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
