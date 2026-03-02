@@ -13,15 +13,18 @@ model Teacher {
   email        String   @unique
   phone        String?
   passwordHash String
+  students     Student[]
+  batches      Batch[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  students     Student[]
 }
 
 model Student {
   id            String   @id @default(uuid())
   teacher       Teacher  @relation(fields: [teacherId], references: [id])
   teacherId     String
+  batch         Batch?   @relation(fields: [batchId], references: [id])
+  batchId       String?
   name          String
   parentName    String?
   parentPhone   String?
@@ -30,6 +33,7 @@ model Student {
   isActive      Boolean  @default(true)
   feeHistory    StudentFeeHistory[]
   payments      Payment[]
+  attendance    Attendance[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -52,4 +56,33 @@ model Payment {
   year         Int
   amountPaid   Float
   dateReceived DateTime @default(now())
+}
+
+model Batch {
+  id        String   @id @default(cuid())
+  teacher   Teacher  @relation(fields: [teacherId], references: [id])
+  teacherId String
+  name      String
+  students  Student[]
+  attendance Attendance[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teacherId])
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  student   Student  @relation(fields: [studentId], references: [id])
+  studentId String
+  batch     Batch    @relation(fields: [batchId], references: [id])
+  batchId   String
+  date      DateTime
+  status    String   // 'present' or 'absent'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, date])
+  @@index([batchId, date])
+  @@index([studentId, date])
 }
