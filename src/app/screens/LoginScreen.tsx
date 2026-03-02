@@ -7,6 +7,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useLoginMutation } from "../api/auth";
 import { getErrorMessage } from "../services/errorHandler";
+import { ErrorAlert } from "../components/ui/alerts";
 
 export function LoginScreen() {
   const navigate = useNavigate();
@@ -30,7 +31,10 @@ export function LoginScreen() {
       await login({ email: formData.email, password: formData.password }).unwrap();
       navigate("/dashboard");
     } catch (err) {
-      setError(getErrorMessage(err))
+      const errorMsg = getErrorMessage(err)
+      setError(errorMsg)
+      // Auto-clear error after 5 seconds
+      setTimeout(() => setError(""), 5000)
     }
   };
 
@@ -49,11 +53,7 @@ export function LoginScreen() {
           Login to continue tracking fees
         </p>
 
-        {error && (
-          <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-sm text-destructive">
-            {error}
-          </div>
-        )}
+        {error && <ErrorAlert error={error} title="Login Failed" />}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}

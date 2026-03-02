@@ -16,9 +16,31 @@ export function normalizeError(error: any): ApiError {
   // Handle RTK Query FetchBaseQueryError
   if (typeof error === 'object' && 'data' in error && error.data) {
     const data = error.data as any
+    const status = error.status
+    
+    // Try to extract message from various formats
+    let message = data.message || data.error || data.detail || ''
+    
+    // If still no message, use status-based fallback
+    if (!message) {
+      switch (status) {
+        case 400:
+          message = 'Invalid input. Please check your details.'
+        case 401:
+        case 403:
+          message = 'Invalid email or password'
+        case 409:
+          message = 'This email is already registered'
+        case 500:
+          message = 'Server error. Please try again later.'
+        default:
+          message = `Request failed (${status || 'unknown'})`
+      }
+    }
+    
     return {
-      code: data.code || 'ERROR_API',
-      message: data.message || 'API request failed',
+      code: data.code || `ERROR_${status}` || 'ERROR_API',
+      message,
       details: data.details,
     }
   }
