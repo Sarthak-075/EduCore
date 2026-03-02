@@ -1,0 +1,44 @@
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/dist
+/build
+backend/dist/
+
+# env files
+.env
+.env.local
+.env.*.local
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Prisma
+/backend/prisma/*.db
+/backend/prisma/*.db-journal
+
+# misc
+.cache/
+.turbo/
+dist-ssr/
+*.egg-info/
+node_modules

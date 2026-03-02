@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Using SQLite locally to avoid needing a running Postgres server
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // e.g. file:./dev.db
+}
+model Teacher {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  students     Student[]
+}
+
+model Student {
+  id            String   @id @default(uuid())
+  teacher       Teacher  @relation(fields: [teacherId], references: [id])
+  teacherId     String
+  name          String
+  parentName    String?
+  parentPhone   String?
+  monthlyFee    Float
+  dueDay        Int
+  isActive      Boolean  @default(true)
+  feeHistory    StudentFeeHistory[]
+  payments      Payment[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model StudentFeeHistory {
+  id         String   @id @default(uuid())
+  student    Student  @relation(fields: [studentId], references: [id])
+  studentId  String
+  oldFee     Float
+  newFee     Float
+  effective  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model Payment {
+  id           String   @id @default(uuid())
+  student      Student  @relation(fields: [studentId], references: [id])
+  studentId    String
+  month        Int
+  year         Int
+  amountPaid   Float
+  dateReceived DateTime @default(now())
+}

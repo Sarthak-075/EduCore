@@ -1,0 +1,105 @@
+import { Student, StudentSummary } from "../types";
+
+export const STUDENTS: Student[] = [
+  {
+    id: "1",
+    name: "Arjun Sharma",
+    parentName: "Rajesh Sharma",
+    parentPhone: "9876543210",
+    parentEmail: "rajesh.sharma@example.com",
+    monthlyFee: 5000,
+    dueDay: 5,
+    status: "pending",
+    avatar: "AS",
+  },
+  {
+    id: "2",
+    name: "Priya Patel",
+    parentName: "Amit Patel",
+    parentPhone: "9876543211",
+    parentEmail: "amit.patel@example.com",
+    monthlyFee: 4500,
+    dueDay: 10,
+    status: "partial",
+    avatar: "PP",
+  },
+  {
+    id: "3",
+    name: "Rohan Verma",
+    parentName: "Suresh Verma",
+    parentPhone: "9876543212",
+    parentEmail: "suresh.verma@example.com",
+    monthlyFee: 5000,
+    dueDay: 15,
+    status: "paid",
+    avatar: "RV",
+  },
+  {
+    id: "4",
+    name: "Ananya Singh",
+    parentName: "Vikram Singh",
+    parentPhone: "9876543213",
+    parentEmail: "vikram.singh@example.com",
+    monthlyFee: 4000,
+    dueDay: 5,
+    status: "pending",
+    avatar: "AS",
+  },
+  {
+    id: "5",
+    name: "Karan Mehta",
+    parentName: "Anil Mehta",
+    parentPhone: "9876543214",
+    parentEmail: "anil.mehta@example.com",
+    monthlyFee: 4500,
+    dueDay: 20,
+    status: "partial",
+    avatar: "KM",
+  },
+  {
+    id: "6",
+    name: "Neha Reddy",
+    parentName: "Ravi Reddy",
+    parentPhone: "9876543215",
+    parentEmail: "ravi.reddy@example.com",
+    monthlyFee: 5000,
+    dueDay: 25,
+    status: "paid",
+    avatar: "NR",
+  },
+  {
+    id: "7",
+    name: "Vikram Kumar",
+    parentName: "Sanjay Kumar",
+    parentPhone: "9876543216",
+    parentEmail: "sanjay.kumar@example.com",
+    monthlyFee: 4500,
+    dueDay: 8,
+    status: "paid",
+    avatar: "VK",
+  },
+  {
+    id: "8",
+    name: "Ishita Desai",
+    parentName: "Nikhil Desai",
+    parentPhone: "9876543217",
+    parentEmail: "nikhil.desai@example.com",
+    monthlyFee: 4000,
+    dueDay: 12,
+    status: "pending",
+    avatar: "ID",
+  },
+];
+
+export const STUDENTS_SUMMARY: StudentSummary[] = STUDENTS.map((student) => ({
+  id: student.id,
+  name: student.name,
+  monthlyFee: student.monthlyFee,
+  status: student.status,
+  avatar: student.avatar,
+}));
+
+// Helper function to get a student by ID
+export const getStudentById = (id: string): Student | undefined => {
+  return STUDENTS.find((student) => student.id === id);
+};
