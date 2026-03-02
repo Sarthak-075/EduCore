@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { BatchForm } from '../BatchForm'
+import { BatchForm } from './BatchForm'
 import '@testing-library/jest-dom'
 
 describe('BatchForm', () => {

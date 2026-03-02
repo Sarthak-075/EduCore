@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useLoginMutation } from "../api/auth";
+import { getErrorMessage } from "../services/errorHandler";
 
 export function LoginScreen() {
   const navigate = useNavigate();
@@ -28,8 +29,8 @@ export function LoginScreen() {
       setError("");
       await login({ email: formData.email, password: formData.password }).unwrap();
       navigate("/dashboard");
-    } catch (err: any) {
-      setError(err.error || "Login failed");
+    } catch (err) {
+      setError(getErrorMessage(err))
     }
   };
 

@@ -86,3 +86,29 @@ export interface Teacher {
   email: string;
   phone?: string;
 }
+
+// Redux State Types
+export interface AttendanceState {
+  selectedDate: string
+  selectedBatchId: string | null
+  records: Record<string, { studentId: string; status?: 'PRESENT' | 'ABSENT' | 'LEAVE'; remarks?: string }>
+  bulkMode: boolean
+  error: string | null
+  successMessage: string | null
+}
+
+export interface BatchState {
+  currentBatch: string | null
+  loading: boolean
+  error: string | null
+}
+
+// API Response Error Types
+export interface ApiErrorResponse {
+  data?: {
+    message?: string
+    error?: string
+    details?: unknown
+  }
+  status?: number
+}

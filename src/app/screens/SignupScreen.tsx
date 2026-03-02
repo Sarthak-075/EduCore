@@ -7,6 +7,8 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useSignupMutation } from "../api/auth";
 import { toast } from "sonner";
+import { getErrorMessage } from "../services/errorHandler";
+
 export function SignupScreen() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -42,8 +44,8 @@ export function SignupScreen() {
         }).unwrap();
         toast.success("Account created successfully!");
         navigate("/dashboard");
-      } catch (err: any) {
-        toast.error(err.error || "Signup failed");
+      } catch (err) {
+        toast.error(getErrorMessage(err));
       }
     }
   };

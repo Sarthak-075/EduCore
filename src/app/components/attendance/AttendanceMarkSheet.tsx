@@ -14,10 +14,11 @@ import { Alert, AlertDescription } from '../ui/alert'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
-import { AlertCircle, Loader2, Search } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import { AttendanceToggle } from './AttendanceToggle'
 import { AttendanceStatusBadge } from './AttendanceStatusBadge'
 import { ScrollArea } from '../ui/scroll-area'
+import { SearchInput } from '../ui/search-input'
 
 export interface StudentAttendanceRecord {
   studentId: string
@@ -132,16 +133,12 @@ export const AttendanceMarkSheet: React.FC<AttendanceMarkSheetProps> = ({
         )}
 
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search student name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              disabled={isLoading}
-              className="text-base flex-1"
-            />
-          </div>
+          <SearchInput
+            placeholder="Search student name..."
+            value={searchQuery}
+            onChange={setSearchQuery}
+            disabled={isLoading}
+          />
           {showRemarks && (
             <div className="flex items-center gap-2">
               <Checkbox
@@ -164,8 +161,8 @@ export const AttendanceMarkSheet: React.FC<AttendanceMarkSheetProps> = ({
           <ScrollArea className="border rounded-md">
             <div className="overflow-x-auto">
               <Table className="min-w-full">
-                <TableHeader>
-                  <TableRow className="bg-muted">
+                <TableHeader className="sticky top-0 bg-muted">
+                  <TableRow>
                     <TableHead className="w-[200px]">Student Name</TableHead>
                     <TableHead className="w-[300px]">Attendance</TableHead>
                     {showRemarks && <TableHead className="flex-1">Remarks</TableHead>}
@@ -193,7 +190,6 @@ export const AttendanceMarkSheet: React.FC<AttendanceMarkSheetProps> = ({
                             }
                             disabled={isLoading || submitLoading}
                             className="text-xs"
-                            size={15}
                           />
                         </TableCell>
                       )}

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../utils/hooks'
 import {
   useGetBatchesQuery,
   useGetBatchStudentsQuery,
-} from '../../api/batches'
+} from '../api/batches'
 import {
   useGetAttendanceQuery,
   useMarkAttendanceMutation,
-} from '../../api/attendance'
+} from '../api/attendance'
 import {
   setSelectedDate,
   setSelectedBatchId,
@@ -15,26 +15,27 @@ import {
   setMultipleRecords,
   clearRecords,
   clearError,
-} from '../../store/attendanceSlice'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
+} from '../store/attendanceSlice'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { Label } from '../components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select'
-import { Alert, AlertDescription } from '../ui/alert'
-import { AlertCircle, CheckCircle, CalendarIcon } from 'lucide-react'
-import { AttendanceMarkSheet, StudentAttendanceRecord } from '../attendance/AttendanceMarkSheet'
-import { AttendanceSummaryCard } from '../attendance/AttendanceSummaryCard'
+} from '../components/ui/select'
+import { CalendarIcon } from 'lucide-react'
+import { AttendanceMarkSheet, StudentAttendanceRecord } from '../components/attendance/AttendanceMarkSheet'
+import { AttendanceSummaryCard } from '../components/attendance/AttendanceSummaryCard'
+import { ErrorAlert, SuccessAlert } from '../components/ui/alerts'
+import { getErrorMessage } from '../services/errorHandler'
+import { AttendanceState } from '../types'
 
 export const AttendanceScreen: React.FC = () => {
   const dispatch = useAppDispatch()
-  const attendanceState = useAppSelector((state) => state.attendance)
+  const attendanceState = useAppSelector((state) => state.attendance as AttendanceState)
   const { selectedDate, selectedBatchId, records, bulkMode, error, successMessage } =
     attendanceState
 
@@ -55,26 +56,26 @@ export const AttendanceScreen: React.FC = () => {
   const [view, setView] = useState<'marking' | 'summary'>('marking')
   const [summaryMonth, setSummaryMonth] = useState(new Date().getMonth() + 1)
   const [summaryYear, setSummaryYear] = useState(new Date().getFullYear())
+  const [successMsg, setSuccessMsg] = useState('')
 
   useEffect(() => {
     if (attendanceData?.data) {
-      const recordMap: Record<string, StudentAttendanceRecord> = {}
-      attendanceData.data.forEach((record: any) => {
+      const recordMap: Record<string, { studentId: string; status?: 'PRESENT' | 'ABSENT' | 'LEAVE'; remarks?: string }> = {}
+      attendanceData.data.forEach((record: { studentId: string; status: string; remarks?: string }) => {
         recordMap[record.studentId] = {
           studentId: record.studentId,
-          name: students.find((s: any) => s.id === record.studentId)?.name || record.studentId,
-          status: record.status,
+          status: record.status as 'PRESENT' | 'ABSENT' | 'LEAVE',
           remarks: record.remarks,
         }
       })
-      dispatch(setMultipleRecords(recordMap))
+      dispatch(setMultipleRecords(recordMap as any))
     }
-  }, [attendanceData, students])
+  }, [attendanceData, students, dispatch])
 
-  const studentRecords: StudentAttendanceRecord[] = students.map((student: any) => ({
+  const studentRecords: StudentAttendanceRecord[] = students.map((student: { id: string; name: string }) => ({
     studentId: student.id,
     name: student.name,
-    status: records[student.id]?.status || null,
+    status: (records[student.id]?.status || null) as 'PRESENT' | 'ABSENT' | 'LEAVE' | null,
     remarks: records[student.id]?.remarks || '',
   }))
 
@@ -92,10 +93,15 @@ export const AttendanceScreen: React.FC = () => {
   }
 
   const handleRemarksChange = (studentId: string, remarks: string) => {
+    const currentRecord = records[studentId];
     dispatch(
       setAttendanceRecord({
         studentId,
-        record: { ...records[studentId], remarks },
+        record: { 
+          studentId, 
+          status: (currentRecord?.status || 'PRESENT') as 'PRESENT' | 'ABSENT' | 'LEAVE',
+          remarks 
+        },
       })
     )
   }
@@ -130,8 +136,10 @@ export const AttendanceScreen: React.FC = () => {
         records: recordsToSubmit,
       }).unwrap()
       dispatch(clearRecords())
+      setSuccessMsg('Attendance marked successfully')
+      setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
-      console.error('Failed to mark attendance:', err)
+      console.error('Failed to mark attendance:', getErrorMessage(err))
     }
   }
 
@@ -144,18 +152,16 @@ export const AttendanceScreen: React.FC = () => {
         </p>
       </div>
 
-      {successMessage && (
-        <Alert className="bg-green-50 border-green-200">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-700">{successMessage}</AlertDescription>
-        </Alert>
+      {successMsg && (
+        <SuccessAlert message={successMsg} />
       )}
 
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+        <ErrorAlert error={error} title="Error" />
+      )}
+
+      {markResult.error && (
+        <ErrorAlert error={getErrorMessage(markResult.error)} title="Failed to mark attendance" />
       )}
 
       <div className="flex gap-2">
@@ -188,12 +194,13 @@ export const AttendanceScreen: React.FC = () => {
                   <CalendarIcon className="h-4 w-4" />
                   Date
                 </Label>
-                <Input
+                <input
                   id="date"
                   type="date"
                   value={selectedDate}
                   onChange={(e) => handleDateChange(e.target.value)}
                   max={new Date().toISOString().split('T')[0]}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
@@ -224,7 +231,7 @@ export const AttendanceScreen: React.FC = () => {
           onRecordChange={handleRecordChange}
           onRemarksChange={handleRemarksChange}
           isLoading={attendanceLoading}
-          error={markResult.error?.data?.message}
+          error={getErrorMessage(markResult.error)}
           onSubmit={handleSubmitAttendance}
           submitLoading={markResult.isLoading}
           bulkMarkAllowed={true}

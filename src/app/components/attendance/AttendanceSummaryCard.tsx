@@ -81,23 +81,23 @@ export const AttendanceSummaryCard: React.FC<AttendanceSummaryCardProps> = ({
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <StatCard
-                  label="Average %"
+                  title="Average %"
                   value={stats.avgPercentage}
-                  unit="%"
+                  icon={<span>%</span>}
                   className={getPercentageColor(stats.avgPercentage)}
                 />
                 <StatCard
-                  label="Total Present"
+                  title="Total Present"
                   value={stats.totalPresent}
                   className="text-green-600"
                 />
                 <StatCard
-                  label="Total Absent"
+                  title="Total Absent"
                   value={stats.totalAbsent}
                   className="text-red-600"
                 />
                 <StatCard
-                  label="Total Leave"
+                  title="Total Leave"
                   value={stats.totalLeave}
                   className="text-orange-600"
                 />

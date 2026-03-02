@@ -1,5 +1,7 @@
-import { attendanceApi } from '../attendance'
+import { attendanceApi } from './attendance'
+// @ts-ignore
 import { setupServer } from 'msw/node'
+// @ts-ignore
 import { http, HttpResponse } from 'msw'
 import { configureStore } from '@reduxjs/toolkit'
 
@@ -27,14 +29,14 @@ const mockAttendanceRecords = [
 ]
 
 const server = setupServer(
-  http.get('/api/v1/batches/:batchId/attendance', ({ params }) =>
+  http.get('/api/v1/batches/:batchId/attendance', ({ params }: { params: any }) =>
     HttpResponse.json({
       data: mockAttendanceRecords,
       pagination: { page: 1, limit: 50, total: 2 },
     })
   ),
 
-  http.post('/api/v1/batches/:batchId/attendance', async ({ request }) => {
+  http.post('/api/v1/batches/:batchId/attendance', async ({ request }: { request: any }) => {
     const body = await request.json() as any
     return HttpResponse.json(
       {
@@ -47,7 +49,7 @@ const server = setupServer(
     )
   }),
 
-  http.patch('/api/v1/attendance/:recordId', async ({ request }) => {
+  http.patch('/api/v1/attendance/:recordId', async ({ request }: { request: any }) => {
     const body = await request.json() as any
     return HttpResponse.json({
       id: 'record1',
@@ -65,7 +67,7 @@ const server = setupServer(
     return new HttpResponse(null, { status: 204 })
   }),
 
-  http.get('/api/v1/batches/:batchId/attendance/summary', ({ params }) =>
+  http.get('/api/v1/batches/:batchId/attendance/summary', ({ params }: { params: any }) =>
     HttpResponse.json({
       batchId: 'batch1',
       month: 1,
@@ -93,7 +95,7 @@ const server = setupServer(
     })
   ),
 
-  http.get('/api/v1/attendance/summary/:studentId', ({ params }) =>
+  http.get('/api/v1/attendance/summary/:studentId', ({ params }: { params: any }) =>
     HttpResponse.json({
       studentId: 'student1',
       name: 'John Doe',

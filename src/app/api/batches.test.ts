@@ -1,5 +1,7 @@
-import { batchApi } from '../batches'
+import { batchApi } from './batches'
+// @ts-ignore
 import { setupServer } from 'msw/node'
+// @ts-ignore
 import { http, HttpResponse } from 'msw'
 import { configureStore } from '@reduxjs/toolkit'
 
@@ -28,7 +30,7 @@ const server = setupServer(
     })
   ),
 
-  http.post('/api/v1/batches', async ({ request }) => {
+  http.post('/api/v1/batches', async ({ request }: { request: any }) => {
     const body = await request.json() as any
     return HttpResponse.json(
       {
@@ -42,11 +44,11 @@ const server = setupServer(
     )
   }),
 
-  http.delete('/api/v1/batches/:batchId', ({ params }) => {
+  http.delete('/api/v1/batches/:batchId', ({ params }: { params: any }) => {
     return new HttpResponse(null, { status: 204 })
   }),
 
-  http.get('/api/v1/batches/:batchId/students', ({ params }) =>
+  http.get('/api/v1/batches/:batchId/students', ({ params }: { params: any }) =>
     HttpResponse.json({
       data: [
         { id: 'student1', name: 'John Doe', parentName: 'Mr. Doe' },
@@ -56,7 +58,7 @@ const server = setupServer(
     })
   ),
 
-  http.post('/api/v1/batches/:batchId/students', async ({ request }) => {
+  http.post('/api/v1/batches/:batchId/students', async ({ request }: { request: any }) => {
     const body = await request.json() as any
     return HttpResponse.json({
       enrolled: body.studentIds.length,

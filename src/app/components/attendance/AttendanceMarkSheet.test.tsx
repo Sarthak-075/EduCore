@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { AttendanceMarkSheet, StudentAttendanceRecord } from '../AttendanceMarkSheet'
+import { AttendanceMarkSheet, StudentAttendanceRecord } from './AttendanceMarkSheet'
 import '@testing-library/jest-dom'
 
 describe('AttendanceMarkSheet', () => {

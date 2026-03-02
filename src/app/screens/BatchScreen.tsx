@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../../hooks'
-import { useGetBatchesQuery, useCreateBatchMutation, useDeleteBatchMutation } from '../../api/batches'
-import { setCurrentBatch } from '../../store/batchSlice'
-import { Button } from '../ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Input } from '../ui/input'
-import { Loader2, Plus, Search } from 'lucide-react'
-import { BatchForm } from '../batch/BatchForm'
-import { BatchCard } from '../batch/BatchCard'
-import { Alert, AlertDescription } from '../ui/alert'
-import { AlertCircle } from 'lucide-react'
+import { useAppDispatch } from '../utils/hooks'
+import { useGetBatchesQuery, useCreateBatchMutation, useDeleteBatchMutation } from '../api/batches'
+import { setCurrentBatch } from '../store/batchSlice'
+import { Button } from '../components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { Loader2, Plus } from 'lucide-react'
+import { BatchForm } from '../components/batch/BatchForm'
+import { BatchCard } from '../components/batch/BatchCard'
+import { SearchInput } from '../components/ui/search-input'
+import { ErrorAlert, SuccessAlert } from '../components/ui/alerts'
+import { getErrorMessage } from '../services/errorHandler'
 
 interface BatchScreenProps {
   onManageStudents?: (batchId: string) => void
@@ -24,6 +24,7 @@ export const BatchScreen: React.FC<BatchScreenProps> = ({
   const [showForm, setShowForm] = useState(false)
   const [editingBatch, setEditingBatch] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   const { data: batchesData, isLoading, error } = useGetBatchesQuery({ page: 1, limit: 100 })
   const [createBatch, createResult] = useCreateBatchMutation()
@@ -38,8 +39,10 @@ export const BatchScreen: React.FC<BatchScreenProps> = ({
     try {
       await createBatch({ name }).unwrap()
       setShowForm(false)
+      setSuccessMessage('Batch created successfully')
+      setTimeout(() => setSuccessMessage(''), 3000)
     } catch (err) {
-      console.error('Failed to create batch:', err)
+      console.error('Failed to create batch:', getErrorMessage(err))
     }
   }
 
@@ -47,8 +50,10 @@ export const BatchScreen: React.FC<BatchScreenProps> = ({
     if (!window.confirm('Are you sure you want to delete this batch?')) return
     try {
       await deleteBatch(batchId).unwrap()
+      setSuccessMessage('Batch deleted successfully')
+      setTimeout(() => setSuccessMessage(''), 3000)
     } catch (err) {
-      console.error('Failed to delete batch:', err)
+      console.error('Failed to delete batch:', getErrorMessage(err))
     }
   }
 
@@ -83,20 +88,27 @@ export const BatchScreen: React.FC<BatchScreenProps> = ({
         </Button>
       </div>
 
+      {successMessage && (
+        <SuccessAlert message={successMessage} />
+      )}
+
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Failed to load batches: {error instanceof Error ? error.message : 'Unknown error'}
-          </AlertDescription>
-        </Alert>
+        <ErrorAlert error={getErrorMessage(error)} title="Failed to load batches" />
+      )}
+
+      {createResult.error && (
+        <ErrorAlert error={getErrorMessage(createResult.error)} title="Failed to create batch" />
+      )}
+
+      {deleteResult.error && (
+        <ErrorAlert error={getErrorMessage(deleteResult.error)} title="Failed to delete batch" />
       )}
 
       {showForm && (
         <BatchForm
-          batch={editingBatch}
+          batch={editingBatch || undefined}
           isLoading={createResult.isLoading}
-          error={createResult.error?.data?.message}
+          error={getErrorMessage(createResult.error)}
           onSubmit={handleCreateBatch}
           onCancel={() => {
             setShowForm(false)
@@ -105,16 +117,12 @@ export const BatchScreen: React.FC<BatchScreenProps> = ({
         />
       )}
 
-      <div className="flex items-center gap-2">
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search batches by name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          disabled={isLoading}
-          className="text-base"
-        />
-      </div>
+      <SearchInput
+        placeholder="Search batches by name..."
+        value={searchQuery}
+        onChange={setSearchQuery}
+        disabled={isLoading}
+      />
 
       {isLoading ? (
         <Card>
