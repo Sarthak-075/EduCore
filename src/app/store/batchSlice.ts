@@ -73,7 +73,10 @@ const batchSlice = createSlice({
       })
       .addMatcher(batchApi.endpoints.getBatches.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to fetch batches'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to fetch batches'
+        state.error = errorMsg
       })
 
     // Create Batch
@@ -88,7 +91,10 @@ const batchSlice = createSlice({
       })
       .addMatcher(batchApi.endpoints.createBatch.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to create batch'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to create batch'
+        state.error = errorMsg
       })
 
     // Update Batch
@@ -106,7 +112,10 @@ const batchSlice = createSlice({
       })
       .addMatcher(batchApi.endpoints.updateBatch.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to update batch'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to update batch'
+        state.error = errorMsg
       })
 
     // Delete Batch
@@ -124,7 +133,10 @@ const batchSlice = createSlice({
       })
       .addMatcher(batchApi.endpoints.deleteBatch.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to delete batch'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to delete batch'
+        state.error = errorMsg
       })
 
     // Enroll Students
@@ -138,7 +150,10 @@ const batchSlice = createSlice({
       })
       .addMatcher(batchApi.endpoints.enrollStudents.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to enroll students'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to enroll students'
+        state.error = errorMsg
       })
   },
 })

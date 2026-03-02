@@ -157,7 +157,7 @@ export const AttendanceScreen: React.FC = () => {
       )}
 
       {error && (
-        <ErrorAlert error={error} title="Error" />
+        <ErrorAlert error={typeof error === 'string' ? error : 'An error occurred'} title="Error" />
       )}
 
       {markResult.error && (

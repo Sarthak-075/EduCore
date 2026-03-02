@@ -123,7 +123,10 @@ const attendanceSlice = createSlice({
       })
       .addMatcher(attendanceApi.endpoints.getAttendance.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to fetch attendance'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to fetch attendance'
+        state.error = errorMsg
       })
 
     // Mark Attendance
@@ -141,7 +144,10 @@ const attendanceSlice = createSlice({
       })
       .addMatcher(attendanceApi.endpoints.markAttendance.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to mark attendance'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to mark attendance'
+        state.error = errorMsg
       })
 
     // Update Attendance
@@ -164,7 +170,10 @@ const attendanceSlice = createSlice({
       )
       .addMatcher(attendanceApi.endpoints.updateAttendance.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to update attendance'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to update attendance'
+        state.error = errorMsg
       })
 
     // Delete Attendance
@@ -182,7 +191,10 @@ const attendanceSlice = createSlice({
       )
       .addMatcher(attendanceApi.endpoints.deleteAttendance.matchRejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || 'Failed to delete attendance'
+        const errorMsg = typeof action.error.message === 'string' 
+          ? action.error.message 
+          : 'Failed to delete attendance'
+        state.error = errorMsg
       })
 
     // Get Monthly Summary
@@ -195,7 +207,10 @@ const attendanceSlice = createSlice({
         attendanceApi.endpoints.getMonthlySummary.matchRejected,
         (state, action) => {
           state.loading = false
-          state.error = action.error.message || 'Failed to fetch monthly summary'
+          const errorMsg = typeof action.error.message === 'string' 
+            ? action.error.message 
+            : 'Failed to fetch monthly summary'
+          state.error = errorMsg
         },
       )
   },
