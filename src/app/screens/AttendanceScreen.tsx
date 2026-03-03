@@ -39,6 +39,9 @@ export const AttendanceScreen: React.FC = () => {
   const { selectedDate, selectedBatchId, records, bulkMode, error, successMessage } =
     attendanceState
 
+  // Safely handle error state
+  const safeError = typeof error === 'string' ? error : null
+
   const { data: batchesData } = useGetBatchesQuery({ page: 1, limit: 100 })
   const { data: studentsData } = useGetBatchStudentsQuery(
     { batchId: selectedBatchId || '', page: 1, limit: 100 },
@@ -156,8 +159,8 @@ export const AttendanceScreen: React.FC = () => {
         <SuccessAlert message={successMsg} />
       )}
 
-      {error && (
-        <ErrorAlert error={typeof error === 'string' ? error : 'An error occurred'} title="Error" />
+      {safeError && (
+        <ErrorAlert error={safeError} title="Error" />
       )}
 
       {markResult.error && (
